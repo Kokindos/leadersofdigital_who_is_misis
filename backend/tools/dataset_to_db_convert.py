@@ -332,10 +332,9 @@ def load_extended_capital_construction_works(extended_land, land_wktpoints: str)
         obj = ExtendedCapitalConstructionWorks(
             oid=oks.oid,
 
-            **get_building_data(oks),
-
-            extended_land_id=extended_land.id,
+            **get_building_data(oks)
         )
+        obj.extended_land = extended_land
         db.session.merge(obj)
         db.session.commit()
         load_extended_organizations(obj, oks.wktpoints)
@@ -370,9 +369,9 @@ def load_extended_organizations(extended_oks, oks_wktpoints):
     for org in db.session.execute(f"select * from organizations "
                                   f"where st_contains('{oks_wktpoints}', point);").all():
         obj = ExtendedOrganization(
-            oid=org.oid,
-            extended_capital_construction_works_oid=extended_oks.oid
+            oid=org.oid
         )
+        obj.extended_capital_construction_works = extended_oks
         db.session.merge(obj)
         db.session.commit()
 

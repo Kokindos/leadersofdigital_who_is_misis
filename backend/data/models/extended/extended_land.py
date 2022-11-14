@@ -21,4 +21,4 @@ class ExtendedLand(db.Model):
     land = orm.relationship("Land", foreign_keys=[land_oid])
     start_ground = orm.relationship("StartGround", foreign_keys=[start_ground_oid])
 
-    capital_construction_works_objects = orm.relationship("ExtendedCapitalConstructionWorks", backref="extended_land")
+    capital_construction_works_objects = orm.relationship("ExtendedCapitalConstructionWorks", overlaps="extended_land")
