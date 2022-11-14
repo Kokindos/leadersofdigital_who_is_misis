@@ -55,6 +55,13 @@ class LandsImpl implements MapInterface {
           context.read<DrawCubit>().layers.removeLast();
           context.read<DrawCubit>().draw();
         }
+      } else if (event is BboxTopBarState) {
+        LatLng lb = LatLng(last1!.latLng.latitude < last2!.latLng.latitude? last1!.latLng.latitude : last2!.latLng.latitude, last1!.latLng.longitude < last2!.latLng.longitude? last1!.latLng.longitude : last2!.latLng.longitude);
+        LatLng rt = LatLng(last1!.latLng.latitude > last2!.latLng.latitude? last1!.latLng.latitude : last2!.latLng.latitude, last1!.latLng.longitude > last2!.latLng.longitude? last1!.latLng.longitude : last2!.latLng.longitude);
+
+        context.read<ZoomBBoxCubit>().push(ZoomBBoxState(context.read<ZoomBBoxCubit>().state.cameraPosition,lb, rt, true));
+        context.read<MapCubit>().push(BBoxImpl(lb, rt));
+        dispose(context);
       }
     });
   }
@@ -64,9 +71,6 @@ class LandsImpl implements MapInterface {
     if (cameraPosition.zoom < 13) {
       dispose(context);
       context.read<MapCubit>().push(HeatMapImpl());
-    } else if (cameraPosition.zoom > 15) {
-      context.read<DrawCubit>().layers.add(DotLayerModel(geometry: LatLng(55.84762, 37.5658), fillColor: AppColors.veryPeri900, outlineColor: AppColors.veryPeri900, opacity: 1, size: 100));
-      context.read<DrawCubit>().draw();
     }
   }
 

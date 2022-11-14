@@ -182,7 +182,7 @@ class _MapWidgetState extends State<MapWidget> {
               child: ContextMenu(cnt: context),
             )));
 
-    overlayState.insert(shortMenu!);
+    overlayState?.insert(shortMenu!);
   }
 
   void _hideShortMenu() {

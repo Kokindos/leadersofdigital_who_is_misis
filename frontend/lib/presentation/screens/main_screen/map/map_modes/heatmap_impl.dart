@@ -22,8 +22,10 @@ class HeatMapImpl implements MapInterface {
 
   @override
   void init(BuildContext context) async {
-    context.read<DrawCubit>().layers.add(DotLayerModel(geometry: LatLng(55.84762, 37.5658), fillColor: AppColors.veryPeri900, outlineColor: AppColors.veryPeri900, opacity: 1, size: 100));
-    context.read<DrawCubit>().draw();
+    context.read<PolygonLoaderCubit>().load(DownloadedState.inProgress);
+
+    if (Storage().lands.isEmpty) Storage().lands = await Api().getLands();
+    context.read<PolygonLoaderCubit>().load(DownloadedState.downloaded);
   }
 
   @override
