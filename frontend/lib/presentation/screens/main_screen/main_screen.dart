@@ -10,7 +10,7 @@ import 'package:frontend/presentation/screens/main_screen/export/export_bar.dart
 import 'package:frontend/presentation/screens/main_screen/layers_bar/layers_bar.dart';
 import 'package:frontend/presentation/screens/main_screen/topbars/bbox_top_bar.dart';
 import 'package:frontend/presentation/screens/main_screen/topbars/choose_top_bar.dart';
-import 'package:frontend/presentation/screens/main_screen/topbars/cubit/top_bar_cubit.dart';
+import 'package:frontend/presentation/screens/main_screen/topbars/cubit/top_bar_next_cubit.dart';
 import 'package:frontend/presentation/screens/main_screen/topbars/cubit/top_bar_state.dart';
 import 'package:frontend/presentation/screens/main_screen/widgets/loader.dart';
 import 'package:frontend/presentation/screens/main_screen/map/map_widget.dart';
@@ -37,7 +37,7 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             Column(
               children: [
-                BlocBuilder<TopBarCubit, TopBarState>(
+                BlocBuilder<TopBarNextCubit, TopBarState>(
                   builder: (BuildContext context, TopBarState state) {
                     dev.log(("BLOC BUILDER SUCCESS"));
                     if (state is MainTopBarState) {

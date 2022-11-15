@@ -9,7 +9,7 @@ import 'package:frontend/presentation/screens/main_screen/map/map_modes/heatmap_
 import 'package:frontend/presentation/screens/main_screen/map/map_modes/layers_state.dart';
 import 'package:frontend/presentation/screens/main_screen/map/map_modes/map_cubit.dart';
 import 'package:frontend/presentation/screens/main_screen/map/map_modes/zoom_bbox_cubit.dart';
-import 'package:frontend/presentation/screens/main_screen/topbars/cubit/top_bar_cubit.dart';
+import 'package:frontend/presentation/screens/main_screen/topbars/cubit/top_bar_next_cubit.dart';
 import 'package:frontend/presentation/screens/main_screen/topbars/cubit/top_bar_state.dart';
 import 'package:frontend/presentation/screens/main_screen/widgets/cubit/context_menu_cubit.dart';
 import 'package:frontend/presentation/theme/app_colors.dart';
@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (_) => DrawCubit(LayerState([]))),
           BlocProvider(create: (_) => ZoomBBoxCubit(ZoomBBoxState(CameraUpdate.zoomTo(14), LatLng(55.37949118840644, 36.75537470776375), LatLng(56.28408249081925, 38.17401410295989), true))),
           BlocProvider(
-            create: (_) => TopBarCubit(
+            create: (_) => TopBarNextCubit(
               MainTopBarState(),
             ),
           ),

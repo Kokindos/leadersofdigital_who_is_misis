@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/presentation/screens/main_screen/topbars/cubit/top_bar_cubit.dart';
+import 'package:frontend/presentation/screens/main_screen/topbars/cubit/top_bar_next_cubit.dart';
+import 'package:frontend/presentation/screens/main_screen/topbars/cubit/top_bar_prev_cubit.dart';
 import 'package:frontend/presentation/screens/main_screen/topbars/widgets/choose_point_button.dart';
 import 'package:frontend/presentation/theme/app_colors.dart';
 import 'package:frontend/presentation/theme/app_fonts.dart';
@@ -24,7 +25,7 @@ class ChooseTopBar extends StatefulWidget {
 class _ChooseTopBarState extends State<ChooseTopBar> {
   @override
   Widget build(BuildContext context) {
-    var currentState = context.read<TopBarCubit>().state as ChooseTopBarState;
+    var currentState = context.read<TopBarNextCubit>().state as ChooseTopBarState;
     return Container(
       height: 60,
       color: AppColors.neutral800,
@@ -60,7 +61,7 @@ class _ChooseTopBarState extends State<ChooseTopBar> {
                     children: [
                       ChoosePointButton(
                           onPress: () => context
-                              .read<TopBarCubit>()
+                              .read<TopBarNextCubit>()
                               .paintChoseAfterSecondPoint(
                                   widget.point1, widget.point2),
                           title: "Продолжить"),
@@ -69,7 +70,7 @@ class _ChooseTopBarState extends State<ChooseTopBar> {
                       ),
                       ChoosePointButton(
                           onPress: () => context
-                              .read<TopBarCubit>()
+                              .read<TopBarPrevCubit>()
                               .returnToPrevious(MainTopBarState()),
                           title: "Удалить"),
                     ],
@@ -78,14 +79,14 @@ class _ChooseTopBarState extends State<ChooseTopBar> {
                     children: [
                       ChoosePointButton(
                           onPress: () =>
-                              context.read<TopBarCubit>().paintBbox(),
+                              context.read<TopBarNextCubit>().paintBbox(),
                           title: "Начать работу"),
                       const SizedBox(
                         width: 16,
                       ),
                       ChoosePointButton(
                           onPress: () =>
-                              context.read<TopBarCubit>().returnToPrevious(
+                              context.read<TopBarPrevCubit>().returnToPrevious(
                                     ChooseTopBarState(
                                         p1: widget.point1,
                                         p2: widget.point2,
