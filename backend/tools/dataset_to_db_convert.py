@@ -5,6 +5,7 @@ import geoalchemy2.shape
 import openpyxl
 import shapefile
 import shapely.geometry
+import sqlalchemy.exc
 from alive_progress import alive_bar
 from shapely import geometry, wkt, wkb
 
@@ -284,8 +285,9 @@ def load_extended_lands():
                 **get_bad_building_data(land),
 
             )
-            db.session.merge(obj)
+            db.session.add(obj)
             db.session.commit()
+            db.session.refresh(obj)
             load_extended_capital_construction_works(obj, land.wktpoints)
             bar()
 
@@ -300,8 +302,9 @@ def load_extended_lands():
                 is_cultural_heritage=check_if_land_is_cultural_heritage(start_ground.wktpoints),
 
             )
-            db.session.merge(obj)
+            db.session.add(obj)
             db.session.commit()
+            db.session.refresh(obj)
             load_extended_capital_construction_works(obj, start_ground.wktpoints)
             bar()
 
@@ -331,10 +334,10 @@ def load_extended_capital_construction_works(extended_land, land_wktpoints: str)
                                   f"where st_intersects(points, '{land_wktpoints}');").all():
         obj = ExtendedCapitalConstructionWorks(
             oid=oks.oid,
+            extended_land_id=extended_land.id,
 
             **get_building_data(oks)
         )
-        obj.extended_land = extended_land
         db.session.merge(obj)
         db.session.commit()
         load_extended_organizations(obj, oks.wktpoints)
@@ -369,9 +372,9 @@ def load_extended_organizations(extended_oks, oks_wktpoints):
     for org in db.session.execute(f"select * from organizations "
                                   f"where st_contains('{oks_wktpoints}', point);").all():
         obj = ExtendedOrganization(
-            oid=org.oid
+            oid=org.oid,
+            extended_capital_construction_works_oid=extended_oks.oid,
         )
-        obj.extended_capital_construction_works = extended_oks
         db.session.merge(obj)
         db.session.commit()
 
