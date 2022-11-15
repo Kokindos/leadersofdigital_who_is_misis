@@ -20,6 +20,8 @@ import 'package:frontend/presentation/widgets/small_button.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
+import 'controller_extensions/on_click_handler.dart';
+
 class FillOptionContainer {
   final FillOptions fillOptions;
 
@@ -100,6 +102,13 @@ class _MapWidgetState extends State<MapWidget> {
               fillOpacity: ev.opacity,
               fillColor: ev.fillColor.toHexTriplet(),
               fillOutlineColor: ev.outlineColor.toHexTriplet()));
+        }
+      }
+    });
+    context.read<SidebarCubit>().stream.listen((event) {
+      if (controller! != null) {
+        if (event == null) {
+          OnClickHandler.close();
         }
       }
     });
@@ -244,6 +253,7 @@ class _MapWidgetState extends State<MapWidget> {
                     },
                     onMapClick: (p, l) {
                       _hideShortMenu();
+                      context.read<SidebarCubit>().setCurrentArea(null);
                       onMapPressed(context, point: PointAndLatLng(p, l));
                     },
 

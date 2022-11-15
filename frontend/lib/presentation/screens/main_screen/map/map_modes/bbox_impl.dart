@@ -4,6 +4,7 @@ import 'package:frontend/data/api/api.dart';
 import 'package:frontend/data/storage/storage.dart';
 import 'package:frontend/presentation/screens/main_screen/bloc/layers_cubit.dart';
 import 'package:frontend/presentation/screens/main_screen/bloc/polygon_loader_cubit.dart';
+import 'package:frontend/presentation/screens/main_screen/bloc/sidebar_cubit.dart';
 import 'package:frontend/presentation/screens/main_screen/map/map_modes/layers_state.dart';
 import 'package:frontend/presentation/screens/main_screen/map/map_modes/map_interface.dart';
 import 'package:frontend/presentation/theme/app_colors.dart';
@@ -15,6 +16,7 @@ class BBoxImpl extends MapInterface {
   LatLng p1, p2;
 
   BBoxImpl(this.p1, this.p2);
+
   @override
   void dispose(BuildContext context) {
     // TODO: implement dispose
@@ -23,46 +25,73 @@ class BBoxImpl extends MapInterface {
   @override
   void init(BuildContext context) async {
     print('initBBoxLayer');
-    DrawCubit drawCubit=context.read<DrawCubit>();
+    DrawCubit drawCubit = context.read<DrawCubit>();
     drawCubit.layers = [];
-    drawCubit.layers.add(FillLayerModel(event: Storage().lands, fillColor: AppColors.dewberry400, onClick:  (_, fill) {
-      onMapPressed(context, annotation: fill);
-    }, outlineColor: AppColors.dewberry900, opacity: 0.3));
+    drawCubit.layers.add(FillLayerModel(
+        event: Storage().lands,
+        fillColor: AppColors.dewberry400,
+        onClick: (_, fill) {
+          onMapPressed(context, annotation: fill);
+        },
+        outlineColor: AppColors.dewberry900,
+        opacity: 0.3));
     drawCubit.draw();
 
-
     context.read<LayersCubit>().stream.listen((event) async {
-
       drawCubit.layers = [];
 
       context.read<PolygonLoaderCubit>().load(DownloadedState.inProgress);
       if (event[0]) {
-        if (Storage().lands.isEmpty) Storage().lands = await Api().getLands(lb: p1, rt: p2);
+        if (Storage().lands.isEmpty)
+          Storage().lands = await Api().getLands(lb: p1, rt: p2);
 
-        drawCubit.layers.add(FillLayerModel(event: Storage().lands, fillColor: AppColors.dewberry400, onClick:  (_, fill) {
-          onMapPressed(context, annotation: fill);
-        }, outlineColor: AppColors.dewberry900, opacity: 0.3));
+        drawCubit.layers.add(FillLayerModel(
+            event: Storage().lands,
+            fillColor: AppColors.dewberry400,
+            onClick: (_, fill) {
+              onMapPressed(context, annotation: fill);
+            },
+            outlineColor: AppColors.dewberry900,
+            opacity: 0.3));
       }
       if (event[1]) {
-        if (Storage().capitals.isEmpty) Storage().capitals = await Api().getCapital();
+        if (Storage().capitals.isEmpty)
+          Storage().capitals = await Api().getCapital();
 
-        drawCubit.layers.add(FillLayerModel(event: Storage().capitals, fillColor: AppColors.eggshellBlue400, onClick:  (_, fill) {
-          onMapPressed(context, annotation: fill);
-        }, outlineColor: AppColors.dewberry900, opacity: 0.3));
+        drawCubit.layers.add(FillLayerModel(
+            event: Storage().capitals,
+            fillColor: AppColors.eggshellBlue400,
+            onClick: (_, fill) {
+              onMapPressed(context, annotation: fill);
+            },
+            outlineColor: AppColors.dewberry900,
+            opacity: 0.3));
       }
       if (event[3]) {
-        if (Storage().sanitaries.isEmpty) Storage().sanitaries = await Api().getSanitary();
+        if (Storage().sanitaries.isEmpty)
+          Storage().sanitaries = await Api().getSanitary();
 
-        drawCubit.layers.add(FillLayerModel(event: Storage().sanitaries, fillColor: AppColors.lightGray, onClick:  (_, fill) {
-          onMapPressed(context, annotation: fill);
-        }, outlineColor: AppColors.dewberry900, opacity: 0.3));
+        drawCubit.layers.add(FillLayerModel(
+            event: Storage().sanitaries,
+            fillColor: AppColors.lightGray,
+            onClick: (_, fill) {
+              onMapPressed(context, annotation: fill);
+            },
+            outlineColor: AppColors.dewberry900,
+            opacity: 0.3));
       }
       if (event[4]) {
-        if (Storage().starts.isEmpty) Storage().starts = await Api().getStartGrounds();
+        if (Storage().starts.isEmpty)
+          Storage().starts = await Api().getStartGrounds();
 
-        drawCubit.layers.add(FillLayerModel(event: Storage().starts, fillColor: AppColors.gray, onClick:  (_, fill) {
-          onMapPressed(context, annotation: fill);
-        }, outlineColor: AppColors.dewberry900, opacity: 0.3));
+        drawCubit.layers.add(FillLayerModel(
+            event: Storage().starts,
+            fillColor: AppColors.gray,
+            onClick: (_, fill) {
+              onMapPressed(context, annotation: fill);
+            },
+            outlineColor: AppColors.dewberry900,
+            opacity: 0.3));
       }
 
       context.read<PolygonLoaderCubit>().load(DownloadedState.downloaded);
@@ -77,11 +106,14 @@ class BBoxImpl extends MapInterface {
   }
 
   @override
-  void onMapPressed(BuildContext context, {PointAndLatLng? point, Annotation? annotation}) {
+  void onMapPressed(BuildContext context,
+      {PointAndLatLng? point, Annotation? annotation}) {
     if (annotation != null) {
-      context.read<DrawCubit>().update(UpdateFillLayerModel(fill: annotation as Fill, fillColor: AppColors.veryPeri900, outlineColor: AppColors.veryPeri900, opacity: 0.7));
+      context.read<DrawCubit>().update(UpdateFillLayerModel(
+          fill: annotation as Fill,
+          fillColor: AppColors.veryPeri900,
+          outlineColor: AppColors.veryPeri900,
+          opacity: 0.7));
     }
   }
-
-
 }

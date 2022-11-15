@@ -37,12 +37,14 @@ class _ChooseTopBarState extends State<ChooseTopBar> {
               children: [
                 currentState.isContinueEnabled
                     ? Text(
-                        "Вы выбрали точку 1: ${widget.point1.latitude}, ${widget.point1.longitude}",
+                        "Вы выбрали точку 1: ${widget.point1.latitude.toStringAsFixed(2)}, "
+                            "${widget.point1.longitude.toStringAsFixed(2)}",
                         style:
                             AppFonts.heading3.copyWith(color: AppColors.white),
                       )
                     : Text(
-                        "Вы выбрали точку 2: ${widget.point2.latitude}, ${widget.point2.longitude}",
+                        "Вы выбрали точку 2: ${widget.point2.latitude.toStringAsFixed(2)}, "
+                            "${widget.point2.longitude.toStringAsFixed(2)}",
                         style:
                             AppFonts.heading3.copyWith(color: AppColors.white),
                       ),

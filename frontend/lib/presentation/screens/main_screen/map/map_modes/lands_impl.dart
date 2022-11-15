@@ -80,8 +80,8 @@ class LandsImpl implements MapInterface {
       if (last1 == null) {
         last1 = point;
         print(last1!.latLng);
-        context.read<TopBarCubit>().paintChoseAfterFirstPoint(point!.latLng);
-        context.read<DrawCubit>().layers.add(DotLayerModel(geometry: point!.latLng, fillColor: AppColors.veryPeri900, outlineColor: AppColors.veryPeri900, opacity: 1));
+        context.read<TopBarCubit>().paintChoseAfterFirstPoint(point.latLng);
+        context.read<DrawCubit>().layers.add(DotLayerModel(geometry: point.latLng, fillColor: AppColors.veryPeri900, outlineColor: AppColors.veryPeri900, opacity: 1));
         context.read<DrawCubit>().draw();
 
         return;
@@ -89,7 +89,7 @@ class LandsImpl implements MapInterface {
         last2 = point;
         context.read<TopBarCubit>().paintChoseAfterSecondPoint(last1!.latLng, last2!.latLng);
 
-        context.read<DrawCubit>().layers.add(DotLayerModel(geometry: point!.latLng, fillColor: AppColors.veryPeri900, outlineColor: AppColors.veryPeri900, opacity: 1));
+        context.read<DrawCubit>().layers.add(DotLayerModel(geometry: point.latLng, fillColor: AppColors.veryPeri900, outlineColor: AppColors.veryPeri900, opacity: 1));
         context.read<DrawCubit>().draw();
       }
 
