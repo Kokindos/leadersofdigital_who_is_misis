@@ -23,7 +23,7 @@ def get_geometry_decomposition(number_of_sections: int, x1, y1, x2, y2) -> list[
         for j in range(number_of_sections):
             decomposition[-1].append(Bbox(x1 + section_width * i,
                                           y1 + section_height * j,
-                                          x1 + section_height * (i + 1),
+                                          x1 + section_width * (i + 1),
                                           y1 + section_height * (j + 1)))
     return decomposition
 
