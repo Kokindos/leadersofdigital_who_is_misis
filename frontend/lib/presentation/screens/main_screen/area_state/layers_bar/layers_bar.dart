@@ -28,7 +28,7 @@ class _LayersBarState extends State<LayersBar> {
     AppColors.gray
   ];
 
-  List<bool> active = List.generate(5, (index) => index == 0? true:false);
+  List<bool> active = List.generate(5, (index) => false);
 
   @override
   Widget build(BuildContext context) {

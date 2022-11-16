@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
             create: (_) => SidebarCubit(null),
           ),
           BlocProvider(
-            create: (_) => ChooseLayersCubit(ChooseLayersState({ChooseLayerState.lands})),
+            create: (_) => ChooseLayersCubit(ChooseLayersState({})),
           ),
           BlocProvider(create: (_) => MapCubit(EmptyImpl())),
           BlocProvider(create: (_) => DrawCubit(LayerState([]))),

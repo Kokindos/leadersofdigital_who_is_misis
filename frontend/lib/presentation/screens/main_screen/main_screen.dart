@@ -111,7 +111,9 @@ class _MainScreenState extends State<MainScreen> {
                               left: m != null ? 0 : -450,
                               height: c.maxHeight,
                               duration: const Duration(milliseconds: 200),
-                              child: SideBar(type: 'Земельный участок',),
+                              child: PointerInterceptor(
+                                child: SideBar(type: 'Земельный участок',),
+                              )
                             ),
                         )
                       ],

@@ -47,8 +47,7 @@ class FillOptionContainer {
 
   @override
   // TODO: implement hashCode
-  int get hashCode =>
-      fillOptions.fillColor.hashCode + fillOptions.geometry.hashCode;
+  int get hashCode => fillOptions.geometry.hashCode;
 }
 
 class MapWidget extends StatefulWidget {

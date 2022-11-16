@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/data/api/api.dart';
 import 'package:frontend/data/storage/storage.dart';
+import 'package:frontend/domain/configurator/configurator.dart';
 import 'package:frontend/domain/models/geographic/polygones/land_model.dart';
 import 'package:frontend/domain/models/geographic/polygones/poly_model.dart';
 import 'package:frontend/presentation/screens/main_screen/area_state/context_menu/cubit/context_menu_cubit.dart';
@@ -50,14 +51,6 @@ class BBoxImpl extends MapInterface {
     Storage().lands = await Api().getLands(lb: context.read<ZoomBBoxCubit>().state.lb, rt: context.read<ZoomBBoxCubit>().state.rt);
 
     drawCubit.layers = [];
-    drawCubit.layers.add(PolyModelLayerModel(
-        event: Storage().lands,
-        fillColor: AppColors.dewberry400,
-        onClick: (p, fill) {
-          onMapPressed(context, annotation: fill, model: p);
-        },
-        outlineColor: AppColors.dewberry900,
-        opacity: 0.3));
     drawCubit.draw();
 
     context.read<ChooseLayersCubit>().stream.listen((event) async {
@@ -66,6 +59,24 @@ class BBoxImpl extends MapInterface {
 
       context.read<LoaderCubit>().load(LoaderState.inProgress);
       if (event.state.contains(ChooseLayerState.lands)) {
+
+        Color color = Colors.grey;
+
+        for (var h in Storage().lands.entries) {
+
+          int t = Random().nextInt(100);
+
+          if (t >= 60) {
+            color = Colors.green;
+          } else if (t >= 20) {
+            color = Colors.yellow;
+          } else if (t >= 0) {
+            color = Colors.red;
+          }
+
+          drawCubit.layers.add(PolyLayerModel(geometry: h.value.geometry[0], fillColor: color, outlineColor: color, opacity: 0.3));
+        }
+
         drawCubit.layers.add(PolyModelLayerModel(
             event: Storage().lands,
             fillColor: AppColors.dewberry400,
@@ -73,7 +84,7 @@ class BBoxImpl extends MapInterface {
               onMapPressed(context, annotation: fill, model: p);
             },
             outlineColor: AppColors.dewberry900,
-            opacity: 0.3));
+            opacity: 0.1));
       }
       if (event.state.contains(ChooseLayerState.capitals)) {
         drawCubit.layers.add(PolyModelLayerModel(
@@ -128,7 +139,7 @@ class BBoxImpl extends MapInterface {
           drawCubit.draw();
         } else if (event == ContextMenuState.deleted) {
           drawCubit.layers = [];
-          drawCubit.layers.add(UpdateFillLayerModel(fill: lastContainer!.fill as Fill, fillColor: AppColors.dewberry400, outlineColor: AppColors.dewberry400, opacity: 0.3));
+          drawCubit.layers.add(UpdateFillLayerModel(fill: lastContainer!.fill as Fill, fillColor: AppColors.dewberry400, outlineColor: AppColors.dewberry400, opacity: 0.1));
           drawCubit.draw();
         }
         context.read<ContextMenuCubit>().tapNone();

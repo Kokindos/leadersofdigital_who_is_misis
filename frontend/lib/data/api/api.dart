@@ -127,4 +127,23 @@ class Api {
 
     return m;
   }
+
+  Future<SectionModel> getParams(int id) async {
+    final response = await _client.get('/extended_lands/$id');
+
+    var r = response.data;
+    print(r);
+    return SectionModel(
+        LatLng(0,0),
+        LatLng(0,0),
+        r['is_sanitary_protected_zone']? 1:0,
+        r['is_cultural_heritage'] == null? 0: r['is_cultural_heritage'],
+        r['is_unauthorized'],
+        r['is_mismatch'],
+        r['is_hazardous'],
+        r['is_habitable'],
+        r['is_oks_hazardous'],
+        r['is_typical'],
+        r['kol_mest']);
+  }
 }
