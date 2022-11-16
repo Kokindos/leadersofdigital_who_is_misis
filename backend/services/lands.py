@@ -25,5 +25,4 @@ def select_all_extended_in_bbox(bbox: Bbox):
         .filter(and_(ExtendedLand.land_oid.isnot(None),
                      geoalchemy2.functions.ST_Intersects(Land.points,
                                                          wkt.dumps(bbox.polygon)))).all()
-    print(len(query))
     return query

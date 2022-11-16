@@ -15,10 +15,10 @@ class ExtendedLand(db.Model):
     is_mismatch = Column(Boolean)
     is_hazardous = Column(Boolean)
 
-    land_oid = Column(Integer, ForeignKey("lands.oid", ondelete='CASCADE'), nullable=True)
-    start_ground_oid = Column(Integer, ForeignKey("start_grounds.oid", ondelete='CASCADE'), nullable=True)
+    land_oid = Column(Integer, ForeignKey("lands.oid", ondelete='CASCADE'), nullable=True, unique=True)
+    start_ground_oid = Column(Integer, ForeignKey("start_grounds.oid", ondelete='CASCADE'), nullable=True, unique=True)
 
     land = orm.relationship("Land", foreign_keys=[land_oid])
     start_ground = orm.relationship("StartGround", foreign_keys=[start_ground_oid])
 
-    capital_construction_works_objects = orm.relationship("ExtendedCapitalConstructionWorks", backref="extended_land")
+    capital_construction_works_objects = orm.relationship("ExtendedCapitalConstructionWorks", overlaps="extended_land")

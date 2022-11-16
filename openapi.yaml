@@ -24,7 +24,7 @@ tags:
   - name: start_grounds
     description: Стартовые площадки
 paths:
-  /lands:
+  /lands/get_polygons:
     post:
       tags:
         - lands
@@ -60,6 +60,25 @@ paths:
 
         '400':
           description: Invalid bbox
+  /lands/get_data:
+    post:
+      tags:
+        - lands
+      summary: Данные по ЗУ
+      description: Получить данные по ЗУ в определенной области
+      operationId: landsGetDataByBbox
+      requestBody:
+        description: Bbox (Boundary box) - запрашивеамая область
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bbox:
+                  $ref: "#/components/schemas/Bbox"
+      responses:
+        "200":
+          
   /lands/polygons:
     get:
       tags:

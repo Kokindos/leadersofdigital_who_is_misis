@@ -1,7 +1,22 @@
 from typing import Iterable, Optional
+
+from backend import db
 from backend.data.models import ExtendedLand, ExtendedCapitalConstructionWorks, ExtendedOrganization, Land, StartGround
 
+
+def get_extended_land_by_id(*, land_oid=None, start_ground_oid=None):
+    if land_oid is None and start_ground_oid is None:
+        raise TypeError
+
+    if land_oid:
+        obj = db.session.query(ExtendedLand).filter(ExtendedLand.land_oid == land_oid).first()
+        return obj
+    obj = db.session.query(ExtendedLand).filter(ExtendedLand.start_ground_oid == start_ground_oid).first()
+    return obj
+
+
 def serialize_extended_lands(objects: Iterable[ExtendedLand]) -> list:
+    print(objects[0].capital_construction_works_objects)
     data_json = [
         { 
             "id": obj.id,
@@ -16,8 +31,8 @@ def serialize_extended_lands(objects: Iterable[ExtendedLand]) -> list:
             "is_mismatch": obj.is_mismatch,
             "is_hazardous": obj.is_hazardous,
 
-            "land": get_land_data(obj.land),
-            "start_ground": get_start_ground_data(obj.start_ground),
+            "land": get_land_data(obj.land) if obj.land_oid else None,
+            "start_ground": get_start_ground_data(obj.start_ground) if obj.start_ground_oid else None,
             "oks_objects": serialize_extended_capital_construction_works(obj.capital_construction_works_objects)
         } for obj in objects
     ]
@@ -33,7 +48,7 @@ def serialize_extended_capital_construction_works(objects: Iterable[ExtendedCapi
             'year_built': oks_object.year_built,
             'wall_material': oks_object.wall_material,
             'hazardous': oks_object.hazardous,
-            'typical':oks_object.typical,
+            'typical': oks_object.typical,
             'extended_organizations': serialize_extended_organizations(oks_object.extended_organizations)
         } for oks_object in objects
      ]
