@@ -6,4 +6,5 @@ class ApiRoutes {
   static const getSanitary = '/sanitary_protected_zones/polygons';
   static const getStartGrounds = '/start_grounds/polygons';
   static const getOrganizations='/organizations/points';
+  static const heatmap='/heatmap';
 }

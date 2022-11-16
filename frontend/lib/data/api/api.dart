@@ -4,14 +4,15 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:frontend/data/api/api_routes/api_routes.dart';
 import 'package:frontend/data/interceptors/error_interceptor.dart';
-import 'package:frontend/domain/models/cultural_heritage_model.dart';
-import 'package:frontend/domain/models/land_model.dart';
-import 'package:frontend/domain/models/organization_model.dart';
-import 'package:frontend/domain/models/sanitary_model.dart';
-import 'package:frontend/domain/models/start_model.dart';
+import 'package:frontend/domain/models/geographic/polygones/capital_model.dart';
+import 'package:frontend/domain/models/geographic/polygones/cultural_heritage_model.dart';
+import 'package:frontend/domain/models/geographic/polygones/land_model.dart';
+import 'package:frontend/domain/models/geographic/dots/organization_model.dart';
+import 'package:frontend/domain/models/geographic/polygones/sanitary_model.dart';
+import 'package:frontend/domain/models/geographic/polygones/start_model.dart';
+import 'package:frontend/domain/models/information/section_model.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 
-import '../../domain/models/capital_model.dart';
 
 class Api {
   late Dio _client;
@@ -102,7 +103,28 @@ class Api {
     for (var j in response.data['organizations']) {
       m[j['oid']] = OrganizationModel.fromJson(j);
     }
-    log("SUCCESS ORGANIZATIONS");
+    return m;
+  }
+
+  Future<List<SectionModel>> getHeatmap() async {
+    final response = await _client.get('${ApiRoutes.heatmap}/50');
+    List<SectionModel> m = [];
+    for (var j in response.data['heatmap']['sections']) {
+      m.add(SectionModel(
+          LatLng(j['bbox']['bottom_left']['lat'], j['bbox']['bottom_left']['lon']),
+          LatLng(j['bbox']['top_right']['lat'], j['bbox']['top_right']['lon']),
+          j['average_data']['is_sanitary_protected_zone'],
+          j['average_data']['is_cultural_heritage'],
+          j['average_data']['is_unauthorized'],
+          j['average_data']['is_mismatch'],
+          j['average_data']['is_hazardous'],
+          j['average_data']['is_habitable'],
+          j['average_data']['is_oks_hazardous'],
+          j['average_data']['is_typical'],
+          j['average_data']['kol_mest']));
+    }
+
+
     return m;
   }
 }

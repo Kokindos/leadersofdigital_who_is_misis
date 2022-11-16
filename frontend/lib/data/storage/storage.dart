@@ -1,10 +1,11 @@
-import 'package:frontend/domain/models/building_model.dart';
-import 'package:frontend/domain/models/capital_model.dart';
-import 'package:frontend/domain/models/geographic_model.dart';
-import 'package:frontend/domain/models/land_model.dart';
-import 'package:frontend/domain/models/organization_model.dart';
-import 'package:frontend/domain/models/sanitary_model.dart';
-import 'package:frontend/domain/models/start_model.dart';
+import 'package:frontend/domain/models/geographic/polygones/building_model.dart';
+import 'package:frontend/domain/models/geographic/geographic_model.dart';
+import 'package:frontend/domain/models/geographic/polygones/capital_model.dart';
+import 'package:frontend/domain/models/geographic/polygones/land_model.dart';
+import 'package:frontend/domain/models/geographic/dots/organization_model.dart';
+import 'package:frontend/domain/models/geographic/polygones/sanitary_model.dart';
+import 'package:frontend/domain/models/geographic/polygones/start_model.dart';
+import 'package:frontend/domain/models/information/section_model.dart';
 
 class Storage {
 
@@ -13,6 +14,7 @@ class Storage {
   factory Storage() => _instance;
   Storage._();
 
+  List<SectionModel> heatmap = [];
   Map<int, LandModel> lands = {};
   Map<int, CapitalModel> capitals = {};
   Map<int, OrganizationModel> organizations = {};

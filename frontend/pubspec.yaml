@@ -22,6 +22,7 @@ dependencies:
   google_fonts: any
   dio: ^4.0.6
   flutter_bloc: any
+  freezed: ^2.2.1
 
 dev_dependencies:
   flutter_test:

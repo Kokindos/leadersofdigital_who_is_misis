@@ -4,17 +4,20 @@ import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/data/storage/storage.dart';
-import 'package:frontend/domain/models/area_model.dart';
-import 'package:frontend/domain/models/capital_model.dart';
-import 'package:frontend/domain/models/dot_model.dart';
-import 'package:frontend/presentation/screens/main_screen/bloc/sidebar_cubit.dart';
-import 'package:frontend/presentation/screens/main_screen/map/map_modes/draw_cubit.dart';
-import 'package:frontend/presentation/screens/main_screen/map/map_modes/layers_state.dart';
-import 'package:frontend/presentation/screens/main_screen/map/map_modes/map_cubit.dart';
-import 'package:frontend/presentation/screens/main_screen/map/map_modes/map_interface.dart';
-import 'package:frontend/presentation/screens/main_screen/map/map_modes/zoom_bbox_cubit.dart';
+import 'package:frontend/domain/configurator/configurator.dart';
+import 'package:frontend/domain/models/geographic/dots/dot_model.dart';
+import 'package:frontend/domain/models/geographic/polygones/poly_model.dart';
+import 'package:frontend/presentation/screens/main_screen/area_state/context_menu/cubit/context_menu_cubit.dart';
+import 'package:frontend/presentation/screens/main_screen/area_state/sidebar/cubit/sidebar_cubit.dart';
+import 'package:frontend/presentation/screens/main_screen/map/logic/context_menu/show_context_menu_cubit.dart';
+import 'package:frontend/presentation/screens/main_screen/map/logic/context_menu/show_context_menu_state.dart';
+import 'package:frontend/presentation/screens/main_screen/map/logic/draw/draw_cubit.dart';
+import 'package:frontend/presentation/screens/main_screen/map/logic/draw/layers_state.dart';
+import 'package:frontend/presentation/screens/main_screen/map/logic/handlers/map_cubit.dart';
+import 'package:frontend/presentation/screens/main_screen/map/logic/handlers/map_interface.dart';
+import 'package:frontend/presentation/screens/main_screen/map/logic/zoom_bbox_cubit.dart';
 import 'package:frontend/presentation/screens/main_screen/map/plus_minus.dart';
-import 'package:frontend/presentation/screens/main_screen/widgets/context_menu.dart';
+import 'package:frontend/presentation/screens/main_screen/area_state/context_menu/context_menu.dart';
 import 'package:frontend/presentation/theme/app_colors.dart';
 import 'package:frontend/presentation/widgets/small_button.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
@@ -30,13 +33,11 @@ class FillOptionContainer {
   @override
   bool operator ==(Object o) {
     if (o is FillOptions &&
-        o.fillColor == fillOptions.fillColor &&
         fillOptions.geometry == o.geometry) {
       return true;
     }
 
     if (o is FillOptionContainer &&
-        o.fillOptions.fillColor == fillOptions.fillColor &&
         fillOptions.geometry == o.fillOptions.geometry) {
       return true;
     }
@@ -70,11 +71,11 @@ class _MapWidgetState extends State<MapWidget> {
   @override
   void initState() {
     super.initState();
-    
+
     context.read<DrawCubit>().stream.listen((event) {
+      if (controller == null) return;
 
       if (event.layers.length == 1 && event.layers[0] is UpdateFillLayerModel) {
-        print('sdsdsd');
         UpdateFillLayerModel l = (event.layers[0] as UpdateFillLayerModel);
         controller!.updateFill(l.fill, FillOptions(fillColor: l.fillColor.toHexTriplet(), fillOutlineColor: l.outlineColor.toHexTriplet(),fillOpacity: l.opacity));
         return;
@@ -84,7 +85,7 @@ class _MapWidgetState extends State<MapWidget> {
       controller!.clearFills();
 
       for (LayerModel ev in event.layers) {
-        if (ev is FillLayerModel) {
+        if (ev is PolyModelLayerModel) {
           putFillLayerOnMap(ev.event, ev.fillColor,
               ev.outlineColor, ev.onClick, ev.opacity);
         }
@@ -103,8 +104,54 @@ class _MapWidgetState extends State<MapWidget> {
               fillColor: ev.fillColor.toHexTriplet(),
               fillOutlineColor: ev.outlineColor.toHexTriplet()));
         }
+        if (ev is SectionLayerModel) {
+          Configurator().calculateFunction = (s) {
+            if (s.kol_mest > 5) {
+              return ZoneLevel.good;
+            } else if (s.kol_mest >= 2){
+              return ZoneLevel.normal;
+            } else if (s.kol_mest >= 0.5){
+              return ZoneLevel.bad;
+            } else {
+              return ZoneLevel.none;
+            }
+          };
+
+          for (var a in ev.event) {
+
+            ZoneLevel z = Configurator().calculateFunction(a);
+
+            Color color = Colors.grey;
+
+            if (z == ZoneLevel.bad) {
+              color = Colors.red;
+            } else if (z == ZoneLevel.normal) {
+              color = Colors.yellow;
+            } else if (z == ZoneLevel.good) {
+              color = Colors.green;
+            } else {
+              continue;
+            }
+
+
+            controller!.addFill(FillOptions(
+              geometry: [[
+                LatLng(a.bottom_left.latitude, a.bottom_left.longitude),
+                LatLng(a.bottom_left.latitude, a.top_right.longitude),
+                LatLng(a.top_right.latitude, a.top_right.longitude),
+                LatLng(a.top_right.latitude, a.bottom_left.longitude),
+                LatLng(a.bottom_left.latitude, a.bottom_left.longitude),
+              ]],
+              fillColor: color.toHexTriplet(),
+              fillOutlineColor: color.toHexTriplet(),
+              fillOpacity: ev.opacity
+            ));
+          }
+        }
       }
     });
+
+
     context.read<SidebarCubit>().stream.listen((event) {
       if (controller! != null) {
         if (event == null) {
@@ -116,6 +163,15 @@ class _MapWidgetState extends State<MapWidget> {
     context.read<ZoomBBoxCubit>().stream.listen((event) {
       if (controller != null) {
         controller!.animateCamera(event.cameraPosition);
+      }
+    });
+
+    context.read<ShowContextMenuCubit>().stream.listen((event) {
+      _hideShortMenu();
+      if (event is ClosedShowContextMenuState && isShortMenuActive) {
+        _hideShortMenu();
+      } else if (event is OpenShowContextMenuState) {
+        _showShortMenu(Point((event as OpenShowContextMenuState).x, (event as OpenShowContextMenuState).y));
       }
     });
   }
@@ -139,9 +195,9 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   void putFillLayerOnMap(
-      Map<int, AreaModel> event, Color fillColor, Color outlineColor, Function(AreaModel, Fill) onClick,
+      Map<int, PolyModel> event, Color fillColor, Color outlineColor, Function(PolyModel, Fill) onClick,
       [double? opacity]) async {
-    Map<FillOptionContainer, AreaModel> mapPolygons = {};
+    Map<FillOptionContainer, PolyModel> mapPolygons = {};
 
     for (var e in event.entries) {
       mapPolygons[FillOptionContainer(FillOptions(
@@ -181,7 +237,6 @@ class _MapWidgetState extends State<MapWidget> {
 
   void _showShortMenu(Point<double> click) {
     isShortMenuActive = true;
-    setState(() {});
     OverlayState? overlayState = Overlay.of(context);
     shortMenu = OverlayEntry(
         builder: (_) => Positioned(
@@ -192,13 +247,15 @@ class _MapWidgetState extends State<MapWidget> {
             )));
 
     overlayState?.insert(shortMenu!);
+    setState(() {});
   }
 
   void _hideShortMenu() {
     if (isShortMenuActive) {
       isShortMenuActive = false;
-      setState(() {});
       shortMenu?.remove();
+      shortMenu = null;
+      setState(() {});
     }
   }
 
